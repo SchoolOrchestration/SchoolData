@@ -1,0 +1,52 @@
+---
+- name: Stat for recovery.conf
+  stat:
+    path: "/var/lib/postgresql/{{postgres_version}}/main/recovery.conf"
+  register: recover_stat
+- name: Set the master IP
+  set_fact:
+    master_ip: "{{groups['master'][0]}}"
+    recovery_exists: "{{recover_stat.stat.exists}}"
+  notify: restart postgresql
+- name: Stop the server
+  service:
+    name: postgresql
+    state: stopped
+  when: recovery_exists == false
+- name: Configure postgres conf
+  blockinfile:
+    path: "/etc/postgresql/{{postgres_version}}/main/postgresql.conf"
+    block: |
+      listen_addresses = '*'
+      wal_level = hot_standby
+      max_wal_senders = 3
+      wal_keep_segments = 8
+      hot_standby = on
+  when: recovery_exists == false
+- name: Sync data
+  shell: "pg_basebackup -h {{master_ip}} -D /var/lib/postgresql/{{postgres_version}}/backup -U replica -v -P -R"
+  environment:
+    PGPASSWORD: "{{replica_password}}"
+  become: yes
+  become_user: postgres
+  when: recovery_exists == false
+
+- name: Backup existing db
+  shell: "mv /var/lib/postgresql/{{postgres_version}}/main /var/lib/postgresql/{{postgres_version}}/main.backup"
+  when: recovery_exists == false
+
+- name: Move backuped db to main
+  shell: "mv /var/lib/postgresql/{{postgres_version}}/backup /var/lib/postgresql/{{postgres_version}}/main"
+  when: recovery_exists == false
+
+- name: Ensure postgres is started
+  service:
+    name: postgresql
+    state: started
+
+# rm -rf /var/lib/postgresql/9.5/main && pg_basebackup -h 167.99.241.37 -D /var/lib/postgresql/9.5/main -U replica -v
+
+# export PGPASSWORD=716090DC-8ACC-42AE-886B-ABA6F89BED79
+# pg_basebackup -h 167.99.241.37 -D /var/lib/postgresql/9.5/backup -U replica -v -R
+
+

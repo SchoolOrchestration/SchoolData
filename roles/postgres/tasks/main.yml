@@ -1,0 +1,19 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+- name: Update repositories cache and install postgres packages
+  apt:
+    name: "{{item}}"
+    state: present
+    update_cache: yes
+  with_items:
+    - postgresql
+    # - "postgresql={{postgres_version}}"
+    - postgresql-client
+    - postgresql-contrib
+    - python3-pip
+- name: Install psycopg2
+  pip:
+    name: psycopg2
+    state: present

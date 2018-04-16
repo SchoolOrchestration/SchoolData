@@ -1,0 +1,24 @@
+---
+# CREATE USER replica REPLICATION LOGIN ENCRYPTED PASSWORD 'replicauser@';
+- name: Create replica user
+  postgresql_user:
+    name: replica
+    password: "{{replica_password}}"
+    role_attr_flags: replication
+  become: yes
+  become_user: postgres
+- name: Create location for WAL archive
+  file:
+    state: directory
+    path: "/var/lib/{{postgres_version}}/main/archive/"
+- name: Set as master
+  blockinfile:
+    path: "/etc/postgresql/{{postgres_version}}/main/postgresql.conf"
+    block: |
+      listen_addresses = '*'
+      wal_level = hot_standby
+      checkpoint_segments = 8
+      max_wal_senders = 3
+      wal_keep_segments = 8
+      hot_standby = on
+  notify: restart postgresql

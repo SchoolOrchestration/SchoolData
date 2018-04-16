@@ -1,0 +1,10 @@
+---
+- hosts: master
+  roles:
+    - postgres
+    - master
+
+- hosts: slave
+  roles:
+    - postgres
+    - slave

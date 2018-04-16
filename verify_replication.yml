@@ -1,0 +1,24 @@
+---
+- hosts: master
+  tasks:
+    - name: Create a database
+      postgresql_db:
+        name: replication_test_database
+      become: yes
+      become_user: postgres
+
+- hosts: slave
+  tasks:
+    - name: Verify db exists
+      shell: "psql -d replication_test_database"
+      become: yes
+      become_user: postgres
+
+- hosts: master
+  tasks:
+    - name: Remove the test database
+      postgresql_db:
+        name: replication_test_database
+        state: absent
+      become: yes
+      become_user: postgres
