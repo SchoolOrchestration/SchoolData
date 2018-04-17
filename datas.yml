@@ -1,10 +1,14 @@
 ---
 - hosts: pg_master
   roles:
-    - postgres
-    - master
+    - name: postgres
+      become: yes
+    - name: master
+      become: yes
 
 - hosts: pg_slave
   roles:
-    - postgres
-    - slave
+    - name: postgres
+      become: yes
+    - name: slave
+      become: yes

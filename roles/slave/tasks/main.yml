@@ -5,7 +5,7 @@
   register: recover_stat
 - name: Set the master IP
   set_fact:
-    master_ip: "{{groups['master'][0]}}"
+    master_ip: "{{groups['pg_master'][0]}}"
     recovery_exists: "{{recover_stat.stat.exists}}"
   notify: restart postgresql
 - name: Stop the server

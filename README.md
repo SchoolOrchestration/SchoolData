@@ -18,12 +18,12 @@ This will setup a master and 1 or more slaves (with hot_standby).
 
 Simply update inventory and run the above playbook
 
-Optional `--limit=slave` will not run anything against the master db
+Optional `--limit=pg_slave` will not run anything against the master db
 
 ## Verify replication
 
 ```
-ansible-playbook verify_replication.yml -i inventory
+ansible-playbook verify_replication.yml -i inventory/digital_ocean.py
 ```
 
 Will:

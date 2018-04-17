@@ -1,5 +1,5 @@
 ---
-- hosts: master
+- hosts: pg_master
   tasks:
     - name: Create a database
       postgresql_db:
@@ -7,14 +7,14 @@
       become: yes
       become_user: postgres
 
-- hosts: slave
+- hosts: pg_slave
   tasks:
     - name: Verify db exists
       shell: "psql -d replication_test_database"
       become: yes
       become_user: postgres
 
-- hosts: master
+- hosts: pg_master
   tasks:
     - name: Remove the test database
       postgresql_db:

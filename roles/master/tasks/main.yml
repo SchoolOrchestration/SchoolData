@@ -1,5 +1,10 @@
 ---
 # CREATE USER replica REPLICATION LOGIN ENCRYPTED PASSWORD 'replicauser@';
+- name: Ensure required ports are open
+  ufw:
+    rule: allow
+    port: "postgresql"
+  become: yes
 - name: Create replica user
   postgresql_user:
     name: replica
@@ -7,6 +12,11 @@
     role_attr_flags: replication
   become: yes
   become_user: postgres
+- name: Allow access to replica user
+  lineinfile:
+    path: "/etc/postgresql/{{postgres_version}}/main/pg_hba.conf"
+    line: "host replication replica all md5"
+  notify: restart postgresql
 - name: Create location for WAL archive
   file:
     state: directory
@@ -17,8 +27,9 @@
     block: |
       listen_addresses = '*'
       wal_level = hot_standby
-      checkpoint_segments = 8
       max_wal_senders = 3
       wal_keep_segments = 8
       hot_standby = on
+  tags:
+    - config
   notify: restart postgresql
