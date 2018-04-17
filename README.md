@@ -1,15 +1,15 @@
 # SchoolData
 Plays for managing your data safely
 
+Note: The following commands assume you're dealing with a hardened droplet created using `School`
+
 
 ## Setup master and slaves
-
-**1. Make sure your inventory is correct**
 
 Run:
 
 ```
-ansible-playbook datas.yml -i inventory
+ansible-playbook datas.yml -i inventory/digital_ocean.py
 ```
 
 This will setup a master and 1 or more slaves (with hot_standby).

@@ -1,7 +1,0 @@
-[master]
-167.99.241.37 ansible_user=root ansible_python_interpreter=/usr/bin/python3
-
-[slave]
-207.154.203.86 ansible_user=root ansible_python_interpreter=/usr/bin/python3
-46.101.98.221 ansible_user=root ansible_python_interpreter=/usr/bin/python3
-178.62.92.150 ansible_user=root ansible_python_interpreter=/usr/bin/python3
